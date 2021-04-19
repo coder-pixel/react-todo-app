@@ -103,7 +103,7 @@ input[type="text"] {
 .todo-wrapper{
     width: 100%;
     min-height: 100vh;
-    background: rgb(42, 42, 233);
+    background: rgb(128, 179, 53);
     color: #fff;
     display: flex;
     justify-content: center;
