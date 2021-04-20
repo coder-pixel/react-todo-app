@@ -88,28 +88,27 @@ input[type="text"] {
     color: green;
 } */
 
-
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-*::selection{
+*::selection {
     background: #4dd0e1;
     color: #d50000;
 }
 
-.todo-wrapper{
+.todo-wrapper {
     width: 100%;
     min-height: 100vh;
-    background: rgb(128, 179, 53);
+    background: linear-gradient(90deg, rgba(48, 16, 255, 1) 0%, rgba(100, 115, 255, 1) 100%);
     color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.todo-container{
+.todo-container {
     width: 80%;
     max-width: 450px;
     min-width: 400px;
@@ -117,77 +116,128 @@ input[type="text"] {
     height: auto;
     background: #000;
     overflow-y: auto;
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; */
     padding: 2rem 1.5rem;
     margin-top: 10vh;
     border-radius: 20px;
+
+    position: relative;
+}
+.todo-conatiner-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.todo-heading, .todo-form, .todo-items{
+.todo-heading,
+.todo-form,
+.todo-items {
     width: 100%;
     /* background: pink; */
     margin-bottom: 2rem;
     /* border: 1px solid #fff; */
 }
-.todo-heading{
-    font-size: .7rem;
+.todo-heading {
+    font-size: 0.7rem;
     font-style: italic;
     font-family: cursive;
     text-align: center;
 }
 
-.todo-form{
+.todo-form {
     width: 80%;
     outline: none;
     border: none;
     display: flex;
 }
-.todo-inp{
+.todo-inp {
     width: 75%;
     background: transparent;
-    padding: .8em 1em;
+    padding: 0.8em 1em;
     color: #fff;
     outline: none;
-    border: 1px solid #e43a15;
+    border: 1px solid #149fff;
 }
-.todo-inp:focus{
-    border-color: whitesmoke;
+.todo-inp::placeholder {
+    color: #e2e2e2;
 }
-.todo-btn{
+.todo-inp:focus {
+    /* border-color: whitesmoke; */
+    color: #000;
+    background: linear-gradient(90deg, rgba(20, 159, 255, 1) 0%, rgba(17, 122, 255, 1) 100%);
+}
+.todo-btn {
     width: 25%;
-    background: linear-gradient(to right,#e43a15, #e65245);
+    background: linear-gradient(90deg, rgba(93, 12, 255, 1) 0%, rgba(155, 0, 250, 1) 100%);
     color: #fff;
     border: none;
     outline: none;
     font-weight: bold;
-    font-size: .8rem;
+    font-size: 0.8rem;
     cursor: pointer;
 }
-
-
-.todo-items{
+.todo-btn:active {
+    background: #d50000;
+}
+.emptyTodoDisplay{
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.emptyTodoHeading{
+    font-size: 2rem;
+    color: rgb(243, 20, 20);
+    letter-spacing: 1px;
+    margin-bottom: 1em;
+    text-shadow: 2px 2px 7px rgb(247, 65, 65);
+    font-family: cursive;
+}
+.emptyTodoDisplay p{
+    color: mediumorchid;
+}
+.todo-items {
     width: 100%;
     height: auto;
     /* background: blueviolet; */
     display: flex;
     flex-direction: column;
 }
-.todo-item{
+.todo-item {
     width: 100%;
     height: 50px;
-    background: #00b0ff;
+    background: linear-gradient(90deg, rgba(255, 118, 20, 1) 0%, rgba(255, 84, 17, 1) 100%);
     display: flex;
-    margin-bottom: .5em;
+    align-items: center;
+    margin-bottom: 0.5em;
     border-radius: 10px;
+    position: relative;
 }
-.todo-txt-delBtn{
+.todo-item:nth-child(4n + 1) {
+    background: linear-gradient(90deg, rgba(93, 12, 255, 1) 0%, rgba(155, 0, 250, 1) 100%);
+}
+
+.todo-item:nth-child(4n + 2) {
+    background: linear-gradient(90deg, rgba(255, 12, 241, 1) 0%, rgba(250, 0, 135, 1) 100%);
+}
+.todo-item:nth-child(4n + 3) {
+    background: linear-gradient(90deg, rgba(20, 159, 255, 1) 0%, rgba(17, 122, 255, 1) 100%);
+}
+/* .todo-item:hover{
+    background: rgb(0, 176, 255, .8);
+} */
+.todo-txt-delBtn {
     width: 100%;
     display: flex;
     justify-content: space-evenly;
 }
-.todo-txt{
+.todo-txt {
     width: 90%;
     /* background: chartreuse; */
     line-height: 50px;
@@ -195,7 +245,10 @@ input[type="text"] {
     border: none;
     font-weight: bold;
 }
-input.todo-txt{
+.todo-txt-hover {
+    cursor: pointer;
+}
+input.todo-txt {
     color: #e53935;
     padding: 0 2em;
     outline: none;
@@ -205,7 +258,7 @@ input.todo-txt{
     /* border: 1px solid#e43a15; */
 }
 
-.btn{
+.btn {
     width: auto;
     /* padding: .5em; */
     background: transparent;
@@ -217,24 +270,76 @@ input.todo-txt{
     line-height: 50px;
     cursor: pointer;
 }
-.btn:hover{
+.btn:hover {
     /* width: fit-content;
     height: fit-content;
     background: rgba(0,0,0,.4);
     border-radius: 50%; */
     color: #e53935;
 }
-.delBtn{
+.delBtn {
     text-align: right;
 }
-.editBtn{
+.editBtn {
     margin-right: 10px;
 }
-.editSubmitBtn{
+.editSubmitBtn {
     margin-left: 10px;
 }
 
+/* .item-span{
+    width: 100%;
+    height: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #000;
+} */
+.item-span {
+    content: "";
+    width: 90%;
+    height: 1px;
+    background: #000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.complete {
+    /* text-decoration: line-through; */
+    /* background-color: rgb(197, 191, 194); */
+    color: #000;
+}
 
+.del-menu {
+    position: absolute;
+    bottom: 4%;
+    right: 4%;
+    font-size: 1rem;
+    padding: 0.6em 1em;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    background: #ff5252;
+    color: #fff;
+    cursor: pointer;
+}
+.del-menu:active {
+    background: #d50000;
+}
+
+.resBtn {
+    /* font-size: 1rem; */
+    padding: 1em;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+.resBtn i {
+    font-size: 1rem;
+    color: #d50000;
+}
 /* .delWrapper{
     width: 100%;
     height: 100vh;
@@ -287,10 +392,9 @@ input.todo-txt{
     opacity: 1;
 } */
 
-
 /* for mobile */
-@media (max-width: 480px){
-    .todo-container{
+@media (max-width: 480px) {
+    .todo-container {
         width: 100%;
         margin-top: 0;
         min-height: 100vh;
