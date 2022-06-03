@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import './TodoApp.css';
 
 function TodoApp() {
@@ -17,6 +17,15 @@ function TodoApp() {
 
     // update text on deleted btn
     const [deletedBtnText, setDeletedBtnText] = useState("Deleted")
+
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    // remember permanent delete checkbox settings
+    // const [checkboxSettings, setCheckboxSettings] = useState(true);
+
+
+    // search box functionality
+    const [searchText, setSearchText] = useState("");
+    const [filteredTodos, setFilteredTodos] = useState([]);
 
     // getting storage
     useEffect(() => {
@@ -79,7 +88,7 @@ function TodoApp() {
             }
         )   //filter - it is simliar to map function and takes a bollean value  ..  it includes only all those those values which are truthy and  filters out falsy values
         setDeletedTodos([...deletedTodos].concat(updateDeletedTodos));
-        console.log(deletedTodos);
+        // console.log(deletedTodos);
 
         const updatedTodos = [...todos].filter(
             // (todo) => todo.id !== id
@@ -153,12 +162,40 @@ function TodoApp() {
         setDeletedTodos(unrestoredTodos)
         setTodos([...todos].concat(restoreDeletedTodos));
 
-        // console.log(unrestoredTodos.length)
         if (unrestoredTodos.length === 0) {
             setShowDeletedMenu(false);
         }
     }
 
+
+    const permanentlyDeleteTodo = (id) => {
+        const leftoverDeletedTodos = [...deletedTodos].filter((todo) => {
+            if (todo.id !== id) {
+                return todo;
+            }
+        })
+
+        setDeletedTodos(leftoverDeletedTodos);
+
+        // console.log(unrestoredTodos.length)
+        if (leftoverDeletedTodos.length === 0) {
+            setShowDeletedMenu(false);
+        }
+
+        setShowConfirmDelete(!showConfirmDelete);
+    }
+
+
+    const searchTodo = (e) => {
+        setSearchText(e.target.value);
+
+        const filteredTodosNew = searchText.length === 0 ? todos
+            : todos.filter(todo => todo.text.toLowerCase().includes(searchText.toLowerCase()))
+
+        setFilteredTodos(filteredTodosNew);
+
+        // console.log(filteredTodos);
+    }
     // const newText = (id,textValue) => {
     //     const updatedtodos4 = [...todos].map((todo) => {
     //         if(todo.id === id){
@@ -178,20 +215,47 @@ function TodoApp() {
                             <div className="todo-items del-items">
                                 {deletedTodos.map((todo) => (
                                     <div key={todo.id} className="todo-item">
-                                        <h1 className="todo-txt">{todo.text}</h1>
-                                        <button className="resBtn" onClick={() => restoreDelTodo(todo.id)} title="Restore todo"><i className="fas fa-trash-restore"></i></button>
+                                        <p className="todo-txt">{todo.text}</p>
+                                        <div className="btn-wrap">
+                                            <button className="permanentDelBtn" onClick={() => setShowConfirmDelete(!showConfirmDelete)} title="Delete permanently"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                        <div className="btn-wrap">
+                                            <button className="restoreBtn" onClick={() => restoreDelTodo(todo.id)} title="Restore todo"><i className="fas fa-trash-restore"></i></button>
+                                        </div>
+
+
+                                        {showConfirmDelete ?
+                                            (
+                                                <div className="confirmDelWrapper">
+                                                    <div className="confirmDelContainer">
+                                                        <h1>Confirm Delete</h1>
+                                                        <p>Are you sure you want to permanently delete this ToDo?</p>
+                                                        {/* <input type="checkbox" onChange={() => setCheckboxSettings(true)}>Remember my settings</input> */}
+                                                        <div className="confirmDelBtn-grp">
+                                                            <button onClick={() => permanentlyDeleteTodo(todo.id)}>YES</button>
+                                                            <button onClick={() => setShowConfirmDelete(!showConfirmDelete)}>NO</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                            :
+                                            (null)
+                                        }
+
                                     </div>
                                 )
                                 )}
+                                
                             </div>
                         )
                         :
                         (
-                            <div className="todo-conatiner-inner">
+                            <div className="todo-container-inner">
                                 <div className="todo-heading">
                                     <h1>What's the Plan for Today?</h1>
                                 </div>
 
+                                <div className="form-heading"><h2>Add new To-do:</h2></div>
                                 <form onSubmit={handleSubmit} className="todo-form">
                                     <input
                                         type="text"
@@ -204,6 +268,8 @@ function TodoApp() {
                                     <button type="submit" className="todo-btn" title="Add todo">Add Todo</button>
                                 </form>
 
+                                <input type="text" className="todo-inp todo-searchbox" value={searchText} onChange={(e) => searchTodo(e)} placeholder="Search..." />
+
                                 {todos.length === 0 ?
                                     (
                                         <div className="emptyTodoDisplay">
@@ -214,92 +280,114 @@ function TodoApp() {
                                     :
                                     (
                                         <div className="todo-items">
-                                            {todos.map((td) => (
-                                                <div key={td.id} className={td.isCompleted ? "todo-item complete" : "todo-item incomplete"}>
-                                                    <span className={td.isCompleted ? "item-span" : null}></span>
-                                                    {/* on clicking edit btn we want to change our below div(only for that particular todo) to an input field to get new updated text/data as an edit*/}
-                                                    {todoEditing === td.id ?
-                                                        (
-                                                            <>
-                                                                <input
-                                                                    type="text"
-                                                                    // placeholder={td.text}
-                                                                    placeholder="Type something..."
-                                                                    onChange={(e) => setEditingText(e.target.value)}
-                                                                    // value={() => newText(td.id,td.text)}
-                                                                    value={editingText}
-                                                                    autoFocus
-                                                                    className="todo-txt"
-                                                                />
+                                            {searchText.length === 0 ?
+                                                (
+                                                    todos.map((td) => (
+                                                        <div key={td.id} className={td.isCompleted ? "todo-item complete" : "todo-item incomplete"}>
+                                                            <span className={td.isCompleted ? "item-span" : null}></span>
+                                                            {/* on clicking edit btn we want to change our below div(only for that particular todo) to an input field to get new updated text/data as an edit*/}
+                                                            {todoEditing === td.id ?
+                                                                (
+                                                                    <>
+                                                                        <input
+                                                                            type="text"
+                                                                            // placeholder={td.text}
+                                                                            placeholder="Type something..."
+                                                                            onChange={(e) => setEditingText(e.target.value)}
+                                                                            // value={() => newText(td.id,td.text)}
+                                                                            value={editingText}
+                                                                            autoFocus
+                                                                            className="todo-txt"
+                                                                        />
 
-                                                                {/* submit btn after editing */}
-                                                                <button
-                                                                    className="btn editSubmitBtn"
-                                                                    onClick={() => editTodo(td.id)}>
-                                                                    <i className="fas fa-check"></i>
-                                                                </button>
-                                                            </>
-                                                        )
+                                                                        {/* submit btn after editing */}
+                                                                        <button
+                                                                            className="btn editSubmitBtn"
+                                                                            onClick={() => editTodo(td.id)}>
+                                                                            <i className="fas fa-check"></i>
+                                                                        </button>
+                                                                    </>
+                                                                )
+                                                                :
+                                                                (
+                                                                    <div className="todo-txt-delBtn">
+                                                                        <div className="todo-txt todo-txt-hover" onClick={() => toggleComplete(td.id)}>
+                                                                            {td.text}
+                                                                        </div>
+
+                                                                        {/* delete functionality */}
+                                                                        <button
+                                                                            className="btn delBtn"
+                                                                            onClick={() => deleteTodo(td.id)}
+                                                                            title="Delete todo"
+                                                                        >
+                                                                            <i className="fas fa-minus-circle"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                )
+                                                            }
+
+                                                            <div className="btn-grp">
+                                                                {/* edit functionality */}
+                                                                {/* to display only one of the below two btns */}
+                                                                {todoEditing === td.id ?
+                                                                    (
+                                                                        /* used to have deltet btn, but shifted above */
+                                                                        /* console.log("asas") */
+                                                                        null
+                                                                    )
+                                                                    :
+                                                                    (<button
+                                                                        className="btn editBtn"
+                                                                        onClick={() => setTodoEditing(td.id)}
+                                                                        title="Edit todo"
+                                                                    >
+                                                                        <i className="fas fa-edit"></i>
+                                                                    </button>)
+
+                                                                }
+                                                            </div>
+
+
+
+                                                            {/* checked/completed functionality */}
+                                                            {/* <input
+                                                            type="checkbox"
+                                                            onChange={() => toggleComplete(td.id)}
+                                                            checked={td.isCompleted}  //takes true or false and if true => checked , false => not checked    
+                                                    /> */}
+
+                                                        </div>)
+                                                    )
+                                                )
+                                                :
+                                                (
+                                                    filteredTodos.length === 0 ? 
+                                                        (<h2 style={{color: "#888", lineHeight: "350px"}}>Couldn't find anything...</h2>)
                                                         :
                                                         (
-                                                            <div className="todo-txt-delBtn">
-                                                                <div className="todo-txt todo-txt-hover" onClick={() => toggleComplete(td.id)}>
-                                                                    {td.text}
+                                                            filteredTodos.map((ftd) =>
+                                                                <div key={ftd.id} className="todo-item">
+                                                                    <span className={ftd.isCompleted ? "item-span" : null}></span>
+                                                                    <div className="todo-txt-delBtn">
+                                                                        <div className="todo-txt">
+                                                                            {ftd.text}
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-
-                                                                {/* delete functionality */}
-                                                                <button
-                                                                    className="btn delBtn"
-                                                                    onClick={() => deleteTodo(td.id)}
-                                                                    title="Delete todo"
-                                                                >
-                                                                    <i className="fas fa-minus-circle"></i>
-                                                                </button>
-                                                            </div>
-                                                        )
-                                                    }
-
-                                                    <div className="btn-grp">
-                                                        {/* edit functionality */}
-                                                        {/* to display only one of the below two btns */}
-                                                        {todoEditing === td.id ?
-                                                            (
-                                                                /* used to have deltet btn, but shifted above */
-                                                                console.log("asas")
                                                             )
-                                                            :
-                                                            (<button
-                                                                className="btn editBtn"
-                                                                onClick={() => setTodoEditing(td.id)}
-                                                                title="Edit todo"
-                                                            >
-                                                                <i className="fas fa-edit"></i>
-                                                            </button>)
-
-                                                        }
-                                                    </div>
-
-
-
-                                                    {/* checked/completed functionality */}
-                                                    {/* <input
-                                            type="checkbox"
-                                            onChange={() => toggleComplete(td.id)}
-                                            checked={td.isCompleted}  //takes true or false and if true => checked , false => not checked    
-                                    /> */}
-
-                                                </div>)
-                                            )}
+                                                        )
+                                                )
+                                            }
                                         </div>
-                                    )
-                                }
+                                    )}
                             </div>
                         )
                     }
 
                     {deletedTodos.length !== 0 ?
                         (
-                            <button className="del-menu" onClick={() => setShowDeletedMenu(!showDeletedMenu)} title="Deleted todos">{showDeletedMenu ? ("Todo List") : ("Deleted")}</button>
+                            <button className="del-menu" onClick={() => setShowDeletedMenu(!showDeletedMenu)} title="Deleted todos">{showDeletedMenu ? (<i className="fas fa-clipboard-list"></i>) : (<i className="fas fa-recycle"></i>)}</button>
                         )
                         :
                         null
